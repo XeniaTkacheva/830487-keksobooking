@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Xenia Tkacheva](https://up.htmlacademy.ru/javascript/16/user/830487).
-* Наставник: `Неизвестно`.
+* Наставник: [Валерий Семененко](https://htmlacademy.ru/profile/id851479).
 
 ---
 
