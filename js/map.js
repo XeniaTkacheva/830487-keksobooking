@@ -1,17 +1,7 @@
 'use strict';
-
 // Исходные данные (константы)
+
 var ADVERTS_COUNT = 8;
-var AVATAR = [
-  'img/avatars/user01.png',
-  'img/avatars/user02.png',
-  'img/avatars/user03.png',
-  'img/avatars/user04.png',
-  'img/avatars/user05.png',
-  'img/avatars/user06.png',
-  'img/avatars/user07.png',
-  'img/avatars/user08.png'
-];
 
 var TITLES = [
   'Большая уютная квартира',
@@ -78,12 +68,12 @@ var ROOM_NAMES = {
 // Поиск карты, списка и шаблона пина
 
 var map = document.querySelector('.map');
-var positionPin = map.querySelector('.map__pin');
+var containerPins = map.querySelector('.map__pins');
 var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 
 // Поиск секции и шаблона объявления
 
-var positionAds = document.querySelector('.map__filters-container');
+var containerAds = document.querySelector('.map__filters-container');
 var cardTemplate = document.querySelector('#card').content.querySelector('.popup');
 
 // Массив объявлений
@@ -98,8 +88,11 @@ var getRandomInt = function (min, max) {
 
 // Функция получения случайного элемента массива
 
-var getRandomItem = function (array) {
+var getRandomItem = function (array, unique) {
   var indexRand = Math.floor(Math.random() * array.length);
+  if (unique) {
+    return array.splice(indexRand, 1);
+  }
   return array[indexRand];
 };
 
@@ -116,16 +109,15 @@ function shuffleArray(array) {
 
 // Функция получения массива случайной длины
 
-var getRandArrLength = function (array) {
-  var cutArray = array.slice();
-
-  cutArray.length = getRandomInt(1, cutArray.length);
-
-  return cutArray;
-};
+// var getRandArrLength = function (array) {
+//   var cutArray = array.slice();
+//
+//   cutArray.length = getRandomInt(1, cutArray.length);
+//
+//   return cutArray;
+// };
 
 // Функция создания массива случайных характеристик
-// var mixFeatures = shuffleArray(FEATURES);
 
 var makeRandFeatures = function (featuresArray) {
   var randomFeaturesArray = [];
@@ -136,27 +128,31 @@ var makeRandFeatures = function (featuresArray) {
   return randomFeaturesArray;
 };
 
-var pinPosition = {
-  x: getRandomInt(PINS_SIZE.WIDTH / 2, positionPin.clientWidth - PINS_SIZE.WIDTH / 2),
-  y: getRandomInt(PINS_SIZE.POSITION_Y.MIN, PINS_SIZE.POSITION_Y.MAX)
-};
-
 // Функция перевода карты в активный режим
 
 var showMap = function () {
   document.querySelector('.map').classList.remove('map--faded');
 };
-
+showMap();
 // Функция генерации объявлений
 
+var makeAvatars = function (numer) {
+  var avatars = [];
+  for (var i = 0; i < numer; i++) {
+    avatars.push('img/avatars/user0' + (i + 1) + '.png');
+  }
+  return avatars;
+};
+var avatars = makeAvatars(ADVERTS_COUNT);
+
 var makeAd = function () {
-  var adverds = {
+  return {
     author: {
-      avatar: getRandomItem(AVATAR) // Случайно сгенерир url из 8
+      avatar: getRandomItem(avatars, true) // Случайно сгенерир url из 8
     },
     offer: {
-      title: getRandomItem(TITLES), // Случайно сгенерир url из 8
-      address: pinPosition.x + ', ' + pinPosition.y, // '600, 350', // координаты
+      title: getRandomItem(TITLES, true), // Случайно сгенерир url из 8
+      address: getRandomInt(0, 1200) + ', ' + getRandomInt(350, 630), // '600, 350', // координаты
       price: getRandomInt(PRICE.MIN, PRICE.MAX), // 1200, // случайное число 1000 - 1000000
       type: getRandomItem(TYPES), // Случайное значение из 4
       rooms: getRandomInt(ROOMS.MIN, ROOMS.MAX), // Случайное число 1 - 5
@@ -168,77 +164,65 @@ var makeAd = function () {
       photos: shuffleArray(PHOTOS) // ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'] // массив в случайном полядке
     },
     location: {
-      x: getRandomInt(200, 800), // pinPosition.x, // 200, // Координата X ограничена размерами блока
-      y: getRandomInt(130, 630) // pinPosition.y // 345 // Координата  y от 130 до 630
+      x: getRandomInt(0, 1200) - PINS_SIZE.WIDTH / 2, // 200, // Координата X ограничена размерами блока
+      y: getRandomInt(130, 630) - PINS_SIZE.HEIGHT// pinPosition.y // 345 // Координата  y от 130 до 630
     }
   };
-  return adverds;
 };
-var adverds = makeAd();
 
 // Функция создания массива объявлений
 
 var makeSampleAds = function (numer) {
   for (var i = 0; i < numer; i++) {
-
-    sampleAds.push(adverds);
+    sampleAds.push(makeAd());
   }
   return sampleAds;
 };
 
 sampleAds = makeSampleAds(ADVERTS_COUNT);
 
-var fragment = document.createDocumentFragment();
-
 // Функции создания JS элементов
 
 var renderPin = function (pinArray) {
   var pinElement = pinTemplate.cloneNode(true);
-
-  pinElement.querySelector('.map__pin').style = 'left: ' + pinArray.location.x + 'px; top:' + pinArray.location.y + 'px;';
-  pinElement.querySelector('.map__pin').src = pinArray.author.avatar;
-  pinElement.querySelector('.map__pin').alt = pinArray.offer.title;
+  pinElement.style.left = pinArray.location.x + 'px';
+  pinElement.style.top = pinArray.location.y + 'px';
+  pinElement.querySelector('img').src = pinArray.author.avatar;
+  pinElement.querySelector('img').alt = pinArray.offer.title;
   return pinElement;
 };
-//
-// var renderAd = function (adArray) {
-//   var adElement = pinTemplate.cloneNode(true);
-//
-//   adElement.querySelector('.popap__title').textContent = adArray.offer.title;
-//   adElement.querySelector('.popup__text--address').textContent = adArray.offer.address;
-//   adElement.querySelector('.popup__text--price').textContent = adArray.offer.price;
-//   adElement.querySelector('.popup__type').textContent = adArray.offer.type;
-//   adElement.querySelector('.popup__text--capacity').textContent = adArray.offer.rooms + ' комнаты для ' + adArray.offer.guests + ' гостей';
-//   adElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + adArray.offer.checkin + ', выезд до ' + adArray.offer.checkout;
-//   adElement.querySelector('.popup__features').textContent = adArray.offer.price;
-//   adElement.querySelector('.popup__text--price').textContent = adArray.offer.price;
-//   adElement.querySelector('.popup__description').textContent = adArray.offer.description;
-//   adElement.querySelector('.popup__avatar').src = adArray.author.avatar;
-//   adElement.querySelector('.popup__photos').src = adArray.author.photos;
-//
-//   return adElement;
-// };
-
-
-// Функция добавления JS элементов
-
-var addPins = function (listElement, count) {
-  for (var i = 0; i < count; i++) {
-    fragment.appendChild(renderPin(sampleAds[i]));
+var renderPins = function (pins) {
+  var fragment = document.createDocumentFragment();
+  for (var i = 0; i < pins.length; i++) {
+    fragment.appendChild(renderPin(pins[i]));
   }
-  listElement.appendChild(fragment);
+  containerPins.appendChild(fragment);
+};
+renderPins(sampleAds);
+
+var renderAd = function (adArray) {
+  var adElement = cardTemplate.cloneNode(true);
+  adElement.querySelector('.popup__title').textContent = adArray.offer.title;
+  adElement.querySelector('.popup__text--address').textContent = adArray.offer.address;
+  adElement.querySelector('.popup__text--price').textContent = adArray.offer.price;
+  adElement.querySelector('.popup__type').textContent = ROOM_NAMES[adArray.offer.type];
+  adElement.querySelector('.popup__text--capacity').textContent = adArray.offer.rooms + ' комнаты для ' + adArray.offer.guests + ' гостей';
+  adElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + adArray.offer.checkin + ', выезд до ' + adArray.offer.checkout;
+  adElement.querySelector('.popup__features').textContent = adArray.offer.price;
+  adElement.querySelector('.popup__text--price').textContent = adArray.offer.price + ' ₽/ночь';
+  adElement.querySelector('.popup__description').textContent = adArray.offer.description;
+  adElement.querySelector('.popup__avatar').src = adArray.author.avatar;
+  // adElement.querySelector('.popup__photos').content.querySelector('.popup__photo').src = adArray.photos[0];
+
+  return adElement;
 };
 
-// var addAds = function (listElement, count) {
-//   for (var i = 0; i < count; i++) {
-//     fragment.appendChild(renderAd(sampleAds[i]));
-//   }
-//   listElement.appendChild(fragment);
-// };
-
-showMap();
-renderPin(sampleAds);
-// renderAd(sampleAds);
-// addAds(positionAds);
-addPins(positionPin, ADVERTS_COUNT);
-
+// Функция добавления JS элементов
+var renderAds = function (ads) {
+  var fragment = document.createDocumentFragment();
+  for (var i = 0; i < ads.length; i++) {
+    fragment.appendChild(renderAd(ads[i]));
+  }
+  containerAds.appendChild(fragment);
+};
+renderAds(sampleAds);
