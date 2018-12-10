@@ -3,7 +3,7 @@
 
 var ADVERTS_COUNT = 8;
 
-var TITLES = [
+var Titles = [
   'Большая уютная квартира',
   'Маленькая неуютная квартира',
   'Огромный прекрасный дворец',
@@ -13,30 +13,30 @@ var TITLES = [
   'Уютное бунгало далеко от моря',
   'Неуютное бунгало по колено в воде'
 ];
-var PRICE = {
+var Price = {
   MIN: 1000,
   MAX: 1000000
 };
-var TYPES = [
+var Types = [
   'PALACE',
   'FLAT',
   'HOUSE',
   'BUNGALO'
 ];
-var ROOMS = {
+var Rooms = {
   MIN: 1,
   MAX: 5
 };
-var GUESTS = {
+var Guests = {
   MIN: 0,
   MAX: 12
 };
-var TIME = [
+var Time = [
   '12:00',
   '13:00',
   '14:00'
 ];
-var FEATURES = [
+var Features = [
   'wifi',
   'dishwasher',
   'parking',
@@ -44,15 +44,15 @@ var FEATURES = [
   'elevator',
   'conditioner'
 ];
-var PHOTOS = [
+var Photos = [
   'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
 ];
-var PINS_SIZE = {
+var PinsSize = {
   WIDTH: 50,
   HEIGHT: 70,
-  POSITION_Y: {
+  PositionY: {
     MIN: 130,
     MAX: 630
   }
@@ -65,7 +65,7 @@ var RoomNames = {
   PALACE: 'Дворец'
 };
 
-var avatarImg = ['01', '02', '03', '04', '05', '06', '07', '08'];
+var AvatarImg = ['01', '02', '03', '04', '05', '06', '07', '08'];
 
 // Поиск карты, списка и шаблона пина
 
@@ -130,24 +130,24 @@ showMap();
 var makeAd = function () {
   return {
     author: {
-      avatar: 'img/avatars/user' + getRandomItem(avatarImg, true) + '.png' // Случайно сгенерир url из 8
+      avatar: 'img/avatars/user' + getRandomItem(AvatarImg, true) + '.png' // Случайно сгенерир url из 8
     },
     offer: {
-      title: getRandomItem(TITLES, true), // Случайно сгенерир url из 8
+      title: getRandomItem(Titles, true), // Случайно сгенерир url из 8
       address: getRandomInt(0, 1200) + ', ' + getRandomInt(350, 630), // '600, 350', // координаты
-      price: getRandomInt(PRICE.MIN, PRICE.MAX), // 1200, // случайное число 1000 - 1000000
-      type: getRandomItem(TYPES), // Случайное значение из 4
-      rooms: getRandomInt(ROOMS.MIN, ROOMS.MAX), // Случайное число 1 - 5
-      guests: getRandomInt(GUESTS.MIN, GUESTS.MAX), // Случайное число 1 - 12
-      checkin: getRandomItem(TIME), // '13:00', // Случайное время из 3
-      checkout: getRandomItem(TIME), // '12:00', // Случайное время из 3
-      features: getRandArrLength(FEATURES), // Массив случайной длины
+      price: getRandomInt(Price.MIN, Price.MAX), // 1200, // случайное число 1000 - 1000000
+      type: getRandomItem(Types), // Случайное значение из 4
+      rooms: getRandomInt(Rooms.MIN, Rooms.MAX), // Случайное число 1 - 5
+      guests: getRandomInt(Guests.MIN, Guests.MAX), // Случайное число 1 - 12
+      checkin: getRandomItem(Time), // '13:00', // Случайное время из 3
+      checkout: getRandomItem(Time), // '12:00', // Случайное время из 3
+      features: getRandArrLength(Features), // Массив случайной длины
       description: '', // Пустая строка
-      photos: shuffleArray(PHOTOS) // ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'] // массив в случайном полядке
+      photos: shuffleArray(Photos) // ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'] // массив в случайном полядке
     },
     location: {
-      x: getRandomInt(0, 1200) - PINS_SIZE.WIDTH / 2, // 200, // Координата X ограничена размерами блока
-      y: getRandomInt(130, 630) - PINS_SIZE.HEIGHT// pinPosition.y // 345 // Координата  y от 130 до 630
+      x: getRandomInt(0, 1200) - PinsSize.WIDTH / 2, // 200, // Координата X ограничена размерами блока
+      y: getRandomInt(130, 630) - PinsSize.HEIGHT// pinPosition.y // 345 // Координата  y от 130 до 630
     }
   };
 };
@@ -183,9 +183,9 @@ var createPhotos = function (photosArr, adElement) {
   var photoTemplate = photosList.querySelector('.popup__photo');
   photosList.removeChild(photoTemplate);
 
-  for (var i = 0; i < PHOTOS.length; i++) {
+  for (var i = 0; i < Photos.length; i++) {
     var adPhoto = photoTemplate.cloneNode(true);
-    adPhoto.src = PHOTOS[i];
+    adPhoto.src = Photos[i];
     fragment.appendChild(adPhoto);
   }
   photosList.appendChild(fragment);
